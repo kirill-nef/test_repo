@@ -1,4 +1,4 @@
-# C:\gitlab-runner\*
+# C:\gitlab-runner\**
 $GLPath = "$env:SystemDrive\gitlab-runner"
 $GLBin  = "$GLPath\gitlab-runner.exe"
 
