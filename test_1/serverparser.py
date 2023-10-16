@@ -30,6 +30,6 @@ def convert_data(in_servers_data):
         else:
             out_data_arr.append(elem_arr)
     # Сортируем и убираем повторяющиеся значения и преобразуем в строку
-    return ', '.join(sorted(list(set(out_data_arr))))
+    return ', '.join(sorted(out_data_arr)).replace(',','')
 
 print(convert_data(servers_data))  
