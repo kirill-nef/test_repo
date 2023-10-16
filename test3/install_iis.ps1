@@ -2,96 +2,96 @@ $site_name = "mysite"
 $site_port = 4321
 $site_path = "$env:SystemDrive\$site_name"
 
-# Функция проверки возможности установки WindowsFeature
+# Р¤СѓРЅРєС†РёСЏ РїСЂРѕРІРµСЂРєРё РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё СѓСЃС‚Р°РЅРѕРІРєРё WindowsFeature
 function fn_check_module_wf {
     if (Get-Command -Noun 'WindowsFeature') {
-        Write-Host "Нахожу модуль WindowsFeature, работа с IIS через PowerShell возможна!" -ForegroundColor Green
+        Write-Host "РќР°С…РѕР¶Сѓ РјРѕРґСѓР»СЊ WindowsFeature, СЂР°Р±РѕС‚Р° СЃ IIS С‡РµСЂРµР· PowerShell РІРѕР·РјРѕР¶РЅР°!" -ForegroundColor Green
         return $true
     }
     else {
-        Write-Host "Не найден модуль WindowsFeature. Твоя версия Windows не поддерживает способ установки через PowerShell." -ForegroundColor Red
+        Write-Host "РќРµ РЅР°Р№РґРµРЅ РјРѕРґСѓР»СЊ WindowsFeature. РўРІРѕСЏ РІРµСЂСЃРёСЏ Windows РЅРµ РїРѕРґРґРµСЂР¶РёРІР°РµС‚ СЃРїРѕСЃРѕР± СѓСЃС‚Р°РЅРѕРІРєРё С‡РµСЂРµР· PowerShell." -ForegroundColor Red
         return $false
     }
 }
 
-# Функция проверки наличия установленного IIS
+# Р¤СѓРЅРєС†РёСЏ РїСЂРѕРІРµСЂРєРё РЅР°Р»РёС‡РёСЏ СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅРѕРіРѕ IIS
 function fn_check_install_iis {
-    Write-Host "Проверяю наличие установленного Web-Server (IIS)." -ForegroundColor Yellow
+    Write-Host "РџСЂРѕРІРµСЂСЏСЋ РЅР°Р»РёС‡РёРµ СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅРѕРіРѕ Web-Server (IIS)." -ForegroundColor Yellow
     if (Get-WindowsFeature -Name Web-Server | Where-Object Installed) {
-        Write-Host "Web-Server (IIS) установлен." -ForegroundColor Green
+        Write-Host "Web-Server (IIS) СѓСЃС‚Р°РЅРѕРІР»РµРЅ." -ForegroundColor Green
         return $true
     }
     else {
-        Write-Host "Web-Server (IIS) не установлен." -ForegroundColor Yellow
+        Write-Host "Web-Server (IIS) РЅРµ СѓСЃС‚Р°РЅРѕРІР»РµРЅ." -ForegroundColor Yellow
         return $false
     }
 }
 
 function fn_install_iis {
-    Write-Host "Запущена установка Web-Server (IIS)." -ForegroundColor Yellow
+    Write-Host "Р—Р°РїСѓС‰РµРЅР° СѓСЃС‚Р°РЅРѕРІРєР° Web-Server (IIS)." -ForegroundColor Yellow
     Install-WindowsFeature -name Web-Server -IncludeManagementTool
 }
 
-# Функция настройки и конфигурирования сайта
+# Р¤СѓРЅРєС†РёСЏ РЅР°СЃС‚СЂРѕР№РєРё Рё РєРѕРЅС„РёРіСѓСЂРёСЂРѕРІР°РЅРёСЏ СЃР°Р№С‚Р°
 function fn_config_iis {
-    # Актвируем модуль Webadministration
+    # РђРєС‚РІРёСЂСѓРµРј РјРѕРґСѓР»СЊ Webadministration
     Import-Module Webadministration
 
-    # Проверяю наличие Default Web Site, если он есть - удаляю
+    # РџСЂРѕРІРµСЂСЏСЋ РЅР°Р»РёС‡РёРµ Default Web Site, РµСЃР»Рё РѕРЅ РµСЃС‚СЊ - СѓРґР°Р»СЏСЋ
     if (Get-ChildItem -Path IIS:\Sites | findstr 'Default Web Site') {
-        Write-Host "Удаляю Default Web Site (дефолтный сайт)." -ForegroundColor Yellow
+        Write-Host "РЈРґР°Р»СЏСЋ Default Web Site (РґРµС„РѕР»С‚РЅС‹Р№ СЃР°Р№С‚)." -ForegroundColor Yellow
         Remove-IISSite -Name "Default Web Site" -Confirm:$false
         if (Get-ChildItem -Path IIS:\Sites | findstr 'Default Web Site') {
-            Write-Host "Не удалось удалить Default Web Site (дефолтный сайт)." -ForegroundColor Red
+            Write-Host "РќРµ СѓРґР°Р»РѕСЃСЊ СѓРґР°Р»РёС‚СЊ Default Web Site (РґРµС„РѕР»С‚РЅС‹Р№ СЃР°Р№С‚)." -ForegroundColor Red
         }
     }
 
-    # Проверяю наличие сайта $site_name, если его нет - установлю
+    # РџСЂРѕРІРµСЂСЏСЋ РЅР°Р»РёС‡РёРµ СЃР°Р№С‚Р° $site_name, РµСЃР»Рё РµРіРѕ РЅРµС‚ - СѓСЃС‚Р°РЅРѕРІР»СЋ
     if (Get-ChildItem -Path IIS:\Sites | findstr ${site_name}) {
-        Write-Host "Сайт $site_name уже установлен." -ForegroundColor Green
+        Write-Host "РЎР°Р№С‚ $site_name СѓР¶Рµ СѓСЃС‚Р°РЅРѕРІР»РµРЅ." -ForegroundColor Green
     }
     else {
-        Write-Host "Устанавливаю сайт $site_name на порту $site_port." -ForegroundColor Yellow
+        Write-Host "РЈСЃС‚Р°РЅР°РІР»РёРІР°СЋ СЃР°Р№С‚ $site_name РЅР° РїРѕСЂС‚Сѓ $site_port." -ForegroundColor Yellow
         mkdir $site_path -Force
         Copy-Item ".\html_data\*" -Destination "$site_path" -Recurse
         New-Item iis:\Sites\$site_name -bindings @{protocol="http";bindingInformation=":${site_port}:"} -physicalPath $site_path
         if (Get-ChildItem -Path IIS:\Sites | findstr ${site_name}) {
-            Write-Host "Сайт $site_name установлен." -ForegroundColor Green 
+            Write-Host "РЎР°Р№С‚ $site_name СѓСЃС‚Р°РЅРѕРІР»РµРЅ." -ForegroundColor Green 
         }
     }
 
-    # Выполняю конфигурацию recycle
-    Write-Host "Настраиваю Recycle." -ForegroundColor Yellow
+    # Р’С‹РїРѕР»РЅСЏСЋ РєРѕРЅС„РёРіСѓСЂР°С†РёСЋ recycle
+    Write-Host "РќР°СЃС‚СЂР°РёРІР°СЋ Recycle." -ForegroundColor Yellow
     set-ItemProperty 'IIS:\AppPools\DefaultAppPool' -Name Recycling.periodicRestart.time -Value 0.00:00:00
     set-ItemProperty 'IIS:\AppPools\DefaultAppPool' -Name Recycling.periodicRestart.schedule -Value @{value="03:00:00"} 
 
-    Write-Host "Установка завершена." -ForegroundColor Green
+    Write-Host "РЈСЃС‚Р°РЅРѕРІРєР° Р·Р°РІРµСЂС€РµРЅР°." -ForegroundColor Green
     exit 0
 }
 
-# Начинаем с проверки установленного модуля WindowsFeature
+# РќР°С‡РёРЅР°РµРј СЃ РїСЂРѕРІРµСЂРєРё СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅРѕРіРѕ РјРѕРґСѓР»СЏ WindowsFeature
 if (fn_check_module_wf) {
-    # Проверяем наличие установленного IIS
+    # РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅРѕРіРѕ IIS
     if (fn_check_install_iis) {
-        # Вызываем функцию настройки IIS
+        # Р’С‹Р·С‹РІР°РµРј С„СѓРЅРєС†РёСЋ РЅР°СЃС‚СЂРѕР№РєРё IIS
         fn_config_iis
     }
-    # Если не установлен, установим и настроим
+    # Р•СЃР»Рё РЅРµ СѓСЃС‚Р°РЅРѕРІР»РµРЅ, СѓСЃС‚Р°РЅРѕРІРёРј Рё РЅР°СЃС‚СЂРѕРёРј
     else {
-        # Вызываем функцию установки IIS
+        # Р’С‹Р·С‹РІР°РµРј С„СѓРЅРєС†РёСЋ СѓСЃС‚Р°РЅРѕРІРєРё IIS
         fn_install_iis
-        # Проверяем установился-ли IIS
+        # РџСЂРѕРІРµСЂСЏРµРј СѓСЃС‚Р°РЅРѕРІРёР»СЃСЏ-Р»Рё IIS
         if (fn_check_install_iis) {
-            # Вызываем функцию настройки IIS
+            # Р’С‹Р·С‹РІР°РµРј С„СѓРЅРєС†РёСЋ РЅР°СЃС‚СЂРѕР№РєРё IIS
             fn_config_iis
         }
         else {
-            Write-Host "Установка Web-Server (IIS) не удалась." -ForegroundColor Red
+            Write-Host "РЈСЃС‚Р°РЅРѕРІРєР° Web-Server (IIS) РЅРµ СѓРґР°Р»Р°СЃСЊ." -ForegroundColor Red
             exit 1
         }
     }
 }
-# Если модуль не найден, то выход
+# Р•СЃР»Рё РјРѕРґСѓР»СЊ РЅРµ РЅР°Р№РґРµРЅ, С‚Рѕ РІС‹С…РѕРґ
 else {
     exit 1
 }
