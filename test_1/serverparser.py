@@ -32,4 +32,4 @@ def convert_data(in_servers_data):
     # Сортируем и убираем повторяющиеся значения и преобразуем в строку
     return ', '.join(sorted(out_data_arr)).replace(',','')
 
-print(convert_data(servers_data))  
+print(convert_data(servers_data))
