@@ -52,5 +52,5 @@ if (!(Get-ChildItem -Path IIS:\Sites | findstr ${site_name})) {
 Write-Host "Настраиваю Recycle." -ForegroundColor Yellow
 set-ItemProperty 'IIS:\AppPools\DefaultAppPool' -Name Recycling.periodicRestart.time -Value 0.00:00:00
 set-ItemProperty 'IIS:\AppPools\DefaultAppPool' -Name Recycling.periodicRestart.schedule -Value @{value="03:00:00"} 
-Write-Host "Установка завершена." -ForegroundColor Green
+Write-Host "Установка завершена!" -ForegroundColor Green
 exit 0
