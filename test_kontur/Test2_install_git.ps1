@@ -2,7 +2,7 @@
 $GLPath = "$env:SystemDrive\gitlab-runner"
 $GLBin  = "$GLPath\gitlab-runner.exe"
 
-# Ð”Ð»Ñ Ð»ÑŽÐ±Ð¾Ð³Ð¾ ÑÐºÑ€Ð¸Ð¿Ñ‚Ð° Ð¸Ð»Ð¸ ÐºÐ¾Ð¼Ð°Ð½Ð´Ñ‹, Ð²Ñ‹Ð¿Ð¾Ð»Ð½ÑÑŽÑ‰ÐµÐ³Ð¾ÑÑ Ð²Ð½Ðµ ÑÐµÐ°Ð½ÑÐ°, Ñ‚Ñ€ÐµÐ±ÑƒÐµÑ‚ÑÑ using Ð¼Ð¾Ð´Ð¸Ñ„Ð¸ÐºÐ°Ñ‚Ð¾Ñ€ Ð¾Ð±Ð»Ð°ÑÑ‚ÑŒ Ð´Ð»Ñ Ð²Ð½ÐµÐ´Ñ€ÐµÐ½Ð¸Ñ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ð¹ Ð¿ÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ñ… Ð¸Ð· Ð²Ñ‹Ð·Ñ‹Ð²Ð°ÑŽÑ‰ÐµÐ³Ð¾ ÑÐµÐ°Ð½ÑÐ° Ð¾Ð±Ð»Ð°ÑÑ‚ÑŒ, Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ðº Ð½Ð¸Ð¼ Ð´Ð¾ÑÑ‚ÑƒÐ¿ Ð¸Ð· ÐºÐ¾Ð´Ð° ÑÐµÐ°Ð½ÑÐ°. Ð¤Ð¾Ð½Ð¾Ð²Ñ‹Ðµ Ð·Ð°Ð´Ð°Ð½Ð¸Ñ, Ð·Ð°Ð¿ÑƒÑ‰ÐµÐ½Ð½Ñ‹Ðµ Ñ Start-Job (ÑÐµÐ°Ð½Ñ Ð²Ð½Ðµ Ð¿Ñ€Ð¾Ñ†ÐµÑÑÐ°).
+# Äëÿ ëþáîãî ñêðèïòà èëè êîìàíäû, âûïîëíÿþùåãîñÿ âíå ñåàíñà, òðåáóåòñÿ using ìîäèôèêàòîð îáëàñòü äëÿ âíåäðåíèÿ çíà÷åíèé ïåðåìåííûõ èç âûçûâàþùåãî ñåàíñà îáëàñòü, ÷òîáû ïîëó÷èòü ê íèì äîñòóï èç êîäà ñåàíñà. Ôîíîâûå çàäàíèÿ, çàïóùåííûå ñ Start-Job (ñåàíñ âíå ïðîöåññà).
 $Token  = $using:Token
 $User   = $using:User
 $Pass   = $using:Pass
@@ -11,88 +11,88 @@ $Pass   = $using:Pass
 $GitUri = 'https://github.com/git-for-windows/git/releases/download/v2.25.0.windows.1/Git-2.25.0-64-bit.exe'
 $Uri    = 'https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-windows-amd64.exe'
 
-# ÐŸÑ€Ð¸ Ð²Ð¾Ð·Ð½Ð¸ÐºÐ½Ð¾Ð²ÐµÐ½Ð¸Ð¸ Ð¾ÑˆÐ¸Ð±Ð¾Ðº - Ð¼Ð¾Ð»Ñ‡Ð° Ð¿Ñ€Ð¾Ð´Ð¾Ð»Ð¶Ð°Ñ‚ÑŒ
+# Ïðè âîçíèêíîâåíèè îøèáîê - ìîë÷à ïðîäîëæàòü
 $progressPreference = 'silentlyContinue'
 
-# Ð£ÐºÐ°Ð·Ñ‹Ð²Ð°ÐµÐ¼ Ñ‚Ð¸Ð¿Ñ‹ Ð¿Ñ€Ð¾Ñ‚Ð¾ÐºÐ¾Ð»Ð¾Ð² Ð±ÐµÐ·Ð¾Ð¿Ð°ÑÐ½Ð¾ÑÑ‚Ð¸
+# Óêàçûâàåì òèïû ïðîòîêîëîâ áåçîïàñíîñòè
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Ssl3,Tls,Tls11,Tls12'
 
 
-# Ð£ÑÑ‚Ð½Ð¾Ð²ÐºÐ° GIT
+# Óñòíîâêà GIT
 & git --version | Out-Null
 if ($LASTEXITCODE -ne 0) {
     Set-Location "$env:windir\temp"
     Invoke-WebRequest -UseBasicParsing -Uri $GitUri -OutFile ".\git-installer.exe"
     Start-Process '.\git-installer.exe' -ArgumentList '/SILENT' -NoNewWindow -Wait
     Remove-Item '.\git-installer.exe' -Force
-    # ÐžÐ±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ðµ Ð¿ÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ñ…
+    # Îáíîâëåíèå ïåðåìåííûõ
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 }
 
-# ÐÐ°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ° GIT
-# -ea 0 (error action) - Ð¾ÑˆÐ¸Ð±ÐºÐ° Ð½Ðµ Ð²Ñ‹Ð²ÐµÐ´ÐµÑ‚ÑÑ Ð½Ð° ÑÐºÑ€Ð°Ð½ - Ñ€Ð°Ð±Ð¾Ñ‚Ð° Ð¿Ñ€Ð¾Ð´Ð¾Ð»Ð¶Ð¸Ñ‚ÑÑ
-# Ð¢ÑƒÑ‚ Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ðµ gitlab-runner
+# Íàñòðîéêà GIT
+# -ea 0 (error action) - îøèáêà íå âûâåäåòñÿ íà ýêðàí - ðàáîòà ïðîäîëæèòñÿ
+# Òóò èñïîëüçóåòñÿ îáíîâëåíèå gitlab-runner
 if(Get-Service "gitlab-runner" -ea 0){
-    # Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ð¼ Ð¿Ð¾Ð»Ð½Ñ‹Ð¹ Ð¿ÑƒÑ‚ÑŒ Ð´Ð¾ Ð¸ÑÐ¿Ð¾Ð»Ð½ÑÐµÐ¼Ð¾Ð³Ð¾ Ñ„Ð°Ð¹Ð»Ð°, split - Ñ€Ð°Ð·Ð±Ð¸Ñ‚ÑŒ Ð¿Ð¾ ÑÑ‚Ñ€Ð¾ÐºÐ°, Select-Object -First 1 - Ð²Ð·ÑÑ‚ÑŒ Ð¿ÐµÑ€Ð²Ñ‹Ð¹ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚ Ð¸Ð· Ð²ÑÐµÑ… ÑÑ‚Ñ€Ð¾Ðº
+    # ïîëó÷èì ïîëíûé ïóòü äî èñïîëíÿåìîãî ôàéëà, split - ðàçáèòü ïî ñòðîêà, Select-Object -First 1 - âçÿòü ïåðâûé ýëåìåíò èç âñåõ ñòðîê
     $bin = (Get-WmiObject win32_service | Where-Object{$_.Name -like 'gitlab-runner'} | Select-Object PathName).PathName -split ' ' | Select-Object -First 1
-    # Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¿Ð°Ð¿ÐºÑƒ Ð³Ð´Ðµ Ð»ÐµÐ¶Ð¸Ñ‚ Ð¸ÑÐ¿Ð¾Ð»Ð½ÑÐµÐ¼Ñ‹Ð¹ Ñ„Ð°Ð¹Ð»
+    # ïîëó÷àåì ïàïêó ãäå ëåæèò èñïîëíÿåìûé ôàéë
     $GLPath = Split-Path $bin -Parent
     Set-Location $GLPath
-    # Ð£Ð·Ð½Ð°ÐµÐ¼ Ð²ÐµÑ€ÑÐ¸ÑŽ Ð¸ÑÐ¿Ð¾Ð»Ð½ÑÐµÐ¼Ð¾Ð³Ð¾ Ñ„Ð°Ð¹Ð»Ð°, c Ð¿Ð¾Ð¼Ð¾Ð¼Ñ‰ÑŒÑŽ Ñ€ÐµÐ³ Ð²Ñ‹Ñ€ -match Ð¸Ñ‰ÐµÐ¼ Ð½Ð¾Ð¼ÐµÑ€ Ð²ÐµÑ€ÑÐ¸Ð¸, Out-Null ÑÐºÑ€Ð¾ÐµÑ‚ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ
+    # Óçíàåì âåðñèþ èñïîëíÿåìîãî ôàéëà, c ïîìîìùüþ ðåã âûð -match èùåì íîìåð âåðñèè, Out-Null ñêðîåò çíà÷åíèå
     & $bin --version | Where-Object {$_ -match '^Version:\s*(\d+\.\d+\.\d+)'} | Out-Null
-    # ÐŸÐ¾Ð»ÑƒÑ‡ÐµÐ¼ Ñ€ÐµÐ·ÑƒÐ»ÑŒÑ‚Ð°Ñ‚ Ð² Ð²Ð¸Ð´Ðµ - Major, minor, build
+    # Ïîëó÷åì ðåçóëüòàò â âèäå - Major, minor, build
     $VersionOld = [version]$Matches[1]
-    # ÐµÑÐ»Ð¸ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð¾Ñ‚ÑÑ‚ÑƒÑ‚ÑÐ²ÑƒÐµÑ‚, Ð²Ñ‹Ð´Ð°Ñ‚ÑŒ Ð¾ÑˆÐ¸Ð±ÐºÑƒ Ð¸ Ð·Ð°Ð²ÐµÑ€ÑˆÐ¸Ñ‚ÑŒ Ñ€Ð°Ð±Ð¾Ñ‚Ñƒ ÑÐºÑ€Ð¸Ð¿Ñ‚Ð° Ñ ÐºÐ¾Ð´Ð¾Ð¼ 1
+    # åñëè çíà÷åíèå îòñòóòñâóåò, âûäàòü îøèáêó è çàâåðøèòü ðàáîòó ñêðèïòà ñ êîäîì 1
     if(!$VersionOld) {
         throw "Error"
         exit 1
     }
 
     $GLBinNew = "$GLPath\gitlab-runner_new.exe"
-    # ÐºÐ°Ñ‡Ð°ÐµÐ¼ Ð½Ð¾Ð²Ñ‹Ð¹ Ñ„Ð°Ð¹Ð»
+    # êà÷àåì íîâûé ôàéë
     Invoke-WebRequest -UseBasicParsing -Uri $Uri -OutFile $GLBinNew
 
-    # Ð¿Ñ€Ð¾Ð²ÐµÑ€ÑÐµÐ¼ Ð²ÐµÑ€ÑÐ¸ÑŽ
+    # ïðîâåðÿåì âåðñèþ
     & $GLBinNew --version | Where-Object {$_ -match '^Version:\s*(\d+\.\d+\.\d+)'} | Out-Null
     $VersionNew = [version]$Matches[1]
 
-    # ÑÑ€Ð°Ð²Ð½ÐµÐ½Ð¸Ðµ, ÐµÑÐ»Ð¸ Ð±Ð¾Ð»ÑŒÑˆÐµ Ð¸Ð»Ð¸ Ñ€Ð°Ð²Ð½Ð¾
+    # ñðàâíåíèå, åñëè áîëüøå èëè ðàâíî
     if($VersionOld -ge $VersionNew){
-        # ÑƒÐ´Ð°Ð»ÑÐµÐ¼ Ð¸ Ð·Ð°Ð²ÐµÑ€ÑˆÐ°ÐµÐ¼ Ñ€Ð°Ð±Ð¾Ñ‚Ñƒ ÑÐºÑ€Ð¸Ð¿Ñ‚Ð°
+        # óäàëÿåì è çàâåðøàåì ðàáîòó ñêðèïòà
         Remove-Item $GLBinNew
         exit 0
     }
 
-    # ÐµÑÐ»Ð¸ Ð²ÐµÑ€ÑÐ¸Ñ Ð½Ð¾Ð²Ð°Ñ, Ñ‚Ð¾Ð³Ð´Ð° ÑÑ‚Ð¾Ð¿Ð°ÐµÐ¼, ÑƒÐ´Ð°Ð»ÑÐµÐ¼, Ð¸ ÑƒÐ´Ð°Ð»ÑÐµÐ¼ Ð¸ÑÐ¿Ð¾Ð»Ð½ÑÐµÐ¼Ñ‹Ð¹ Ñ„Ð°Ð¹Ð»
-    Write-Host "`nÐ£ÑÑ‚Ð°Ð½Ð¾Ð²ÐºÐ° Ð²ÐµÑ€ÑÐ¸Ð¸ $VersionNew"
+    # åñëè âåðñèÿ íîâàÿ, òîãäà ñòîïàåì, óäàëÿåì, è óäàëÿåì èñïîëíÿåìûé ôàéë
+    Write-Host "`nÓñòàíîâêà âåðñèè $VersionNew"
     & $bin stop      2>&1 | Write-Host
     & $bin uninstall 2>&1 | Write-Host
     Remove-Item $bin -Force
 
-    # Ð¿ÐµÑ€ÐµÐ¸Ð¼ÐµÐ½Ð¾Ð²Ñ‹Ð²Ð°ÐµÐ¼ gitlab-runner_new.exe Ð² gitlab-runner.exe
+    # ïåðåèìåíîâûâàåì gitlab-runner_new.exe â gitlab-runner.exe
     Rename-Item $GLBinNew -NewName $GLBin
-    # ÐŸÑ€Ð¾Ð²Ð¾Ð´Ð¸Ð¼ ÑƒÑÑ‚Ð°Ð½Ð¾Ð²ÑƒÐº Ñ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð°Ð¼Ð¸
+    # Ïðîâîäèì óñòàíîâóê ñ ïàðàìåòðàìè
     & $GLBin install --user "$User" --password "$Pass" 2>&1 | Write-Host
     & $GLBin start 2>&1 | Write-Host
 
     Write-Host "`nDone."
 }
-# ÐŸÐµÑ€Ð²Ð¾Ð½Ð°Ñ‡Ð°Ð»ÑŒÐ½Ð°Ñ ÑƒÑÑ‚Ð°Ð½Ð¾Ð²ÐºÐ°
+# Ïåðâîíà÷àëüíàÿ óñòàíîâêà
 else{
-    # Ð¡Ð¾Ð·Ð´Ð°ÐµÐ¼ Ð´Ð¸Ñ€ÐµÐºÑ‚Ð¾Ñ€Ð¸ÑŽ
+    # Ñîçäàåì äèðåêòîðèþ
     New-Item -ItemType Directory -Path $GLPath -ea 0
     Set-Location $GLPath
 
-    # Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¸Ð¼Ñ ÑÐ²Ð¾ÐµÐ³Ð¾ ÐºÐ¾Ð¼Ð¿Ð°, ÐµÑÐ»Ð¸ Ð¾Ð½Ð¾ Ð½Ðµ Ñ€Ð°Ð²Ð½Ð¾ dev.kontur, Ñ‚Ð¾Ð³Ð´Ð° Ð¾Ñ‚Ð´Ð°ÐµÐ¼ $false='Evrika-prod'
+    # ïîëó÷àåì èìÿ ñâîåãî êîìïà, åñëè îíî íå ðàâíî dev.kontur, òîãäà îòäàåì $false='Evrika-prod'
     $Tags = @{$true='Evrika-dev';$false='Evrika-prod'}[([System.Net.Dns]::GetHostByName("localhost").HostName) -match 'dev.kontur']
 
-    # ÐºÐ°Ñ‡Ð°ÐµÐ¼ Ð¸ÑÐ¿Ð¾Ð»Ð½ÑÐµÐ¼Ñ‹Ð¹ Ñ„Ð°Ð¹Ð»
+    # êà÷àåì èñïîëíÿåìûé ôàéë
     Invoke-WebRequest -UseBasicParsing -Uri $Uri -OutFile $GLBin
 
-    # ÑƒÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÐ¼
+    # óñòàíàâëèâàåì
     & $GLBin install --user "$User" --password "$Pass" 2>&1 | Write-Host
 
-    # Ð¼ÐµÐ½ÑÐµÐ¼ Ð¿Ð¾Ð»Ð¸Ñ‚Ð¸ÐºÐ¸ Ð±ÐµÐ·Ð¾Ð¿Ð°ÑÐ½Ð¾ÑÑ‚Ð¸, Ð° Ð¸Ð¼ÐµÐ½Ð½Ð¾ Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»Ñ, gc=getcontent,sc=select content
+    # ìåíÿåì ïîëèòèêè áåçîïàñíîñòè, à èìåííî ïîëüçîâàòåëÿ, gc=getcontent,sc=select content
     $tmp = New-TemporaryFile
     secedit /export /cfg "$tmp.inf" | Out-Null
     (gc -Encoding ascii "$tmp.inf") -replace '^SeServiceLogonRight .+', "`$0,$User" | sc -Encoding ascii "$tmp.inf"
@@ -100,7 +100,7 @@ else{
     secedit /configure /db "$tmp.sdb" /cfg "$tmp.inf" | Out-Null
     rm $tmp* -ea 0
 
-    # Ñ€ÐµÐ³Ð¸ÑÑ‚Ñ€Ð¸Ñ€ÑƒÐµÐ¼ÑÑ Ð½Ð° git
+    # ðåãèñòðèðóåìñÿ íà git
     & $GLBin register                     `
         --non-interactive                 `
         --url 'https://git.skbkontur.ru/' `
@@ -109,7 +109,7 @@ else{
         --description "Evrika"            `
         --tag-list $Tags 2>&1 | Write-Host
 
-    # Ð—Ð°Ð¿ÑƒÑÐº
+    # Çàïóñê
     Write-Host "`nStart gitlab-runner"
     & $GLBin start 2>&1 | Write-Host
 }
