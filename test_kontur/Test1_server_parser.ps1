@@ -1,34 +1,34 @@
-# РќР°РїРёС€Рё С„СѓРЅРєС†РёСЋ, РїСЂРµРѕР±СЂР°Р·СѓСЋС‰СѓСЋ СЃС‚СЂРѕРєСѓ СЃ РёРјРµРЅР°РјРё СЃРµСЂРІРµСЂРѕРІ vm-test[1-3],vm-test3,vm-test[4-7],vm-test8
-# РІ СЃРїРёСЃРѕРє РІРёРґР° vm-test1 vm-test2 vm-test3 vm-test3 vm-test4 vm-test5 vm-test6 vm-test7 vm-test8.
+# Ќ ЇЁиЁ дг­ЄжЁо, ЇаҐ®Ўа §гойго бва®Єг б Ё¬Ґ­ ¬Ё бҐаўҐа®ў vm-test[1-3],vm-test3,vm-test[4-7],vm-test8
+# ў бЇЁб®Є ўЁ¤  vm-test1 vm-test2 vm-test3 vm-test3 vm-test4 vm-test5 vm-test6 vm-test7 vm-test8.
 
-# Р’С…РѕРґРЅС‹Рµ РґР°РЅРЅС‹Рµ
+# ‚е®¤­лҐ ¤ ­­лҐ
 $in_servers_data = 'vm-test[1-3],vm-test3,vm-test[4-7],vm-test8'
 
-# РџСЂРµРѕР±СЂР°Р·СѓРµРј РІ РјР°СЃСЃРёРІ
+# ЏаҐ®Ўа §гҐ¬ ў ¬ ббЁў
 $in_servers_data_arr = $in_servers_data -split ','
 
-# РџСѓСЃС‚РѕР№ РјР°СЃСЃРёРІ РґР»СЏ РІС‹РІРѕРґР°
+# Џгбв®© ¬ ббЁў ¤«п ўлў®¤ 
 $arr_out = @()
 
-# Р’ С†РёРєР»Рµ Р±РµСЂРµРј РєР°Р¶РґС‹Р№ СЌР»РµРјРµРЅС‚
+# ‚ жЁЄ«Ґ ЎҐаҐ¬ Є ¦¤л© н«Ґ¬Ґ­в
 foreach ($el_servers_data_arr in $in_servers_data_arr) {
 
-    # РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ СЃРєРѕР±РѕРє
+    # Џа®ўҐапҐ¬ ­ «ЁзЁҐ бЄ®Ў®Є
     if ($el_servers_data_arr -match [Regex]::Escape("[")) {
-        # РћС‚РґРµР»СЏРµРј РёРјСЏ СЃРµСЂРІРµСЂР°
+        # Ћв¤Ґ«пҐ¬ Ё¬п бҐаўҐа 
         $serv_name = $el_servers_data_arr.Substring(0,$el_servers_data_arr.IndexOf('['))
-        # РџРѕР»СѓС‡Р°РµРј РґРёР°РїР°Р·РѕРЅ С‡РёСЃРµР» РІ СЃРєРѕР±РєР°С…, РџСЂРµРѕР±СЂР°Р·СѓРµРј [] РІ ! РґР»СЏ СѓРѕР±СЃС‚РІР°
+        # Џ®«гз Ґ¬ ¤Ё Ї §®­ зЁбҐ« ў бЄ®ЎЄ е, ЏаҐ®Ўа §гҐ¬ [] ў ! ¤«п г®Ўбвў 
         $servers_data_arr = $el_servers_data_arr -replace [Regex]::Escape("]"), "!" -replace [Regex]::Escape("["), "!" -match '!(.*)!'
-        # РџСЂРµРѕР±СЂР°Р·СѓРµРј - РІ .. С‡С‚РѕР±С‹ РїРѕР»СѓС‡РёР»СЃСЏ РґРёР°РїР°Р·РѕРЅ Р·РЅР°С‡РµРЅРёР№
+        # ЏаҐ®Ўа §гҐ¬ - ў .. зв®Ўл Ї®«гзЁ«бп ¤Ё Ї §®­ §­ зҐ­Ё©
         $servers_data_arr = $Matches[0] -replace [Regex]::Escape("!"), "" -replace "-", ".."
         $servers_data_arr = invoke-expression $servers_data_arr 
-        # РљР°РєРёРµ С‡РёСЃР»Р° РµСЃС‚СЊ, РїР»СЋСЃСѓРµРј РІ РѕР±С‰РёР№ РјР°СЃСЃРёРІ
+        # Љ ЄЁҐ зЁб«  Ґбвм, Ї«обгҐ¬ ў ®ЎйЁ© ¬ ббЁў
         foreach ($elem_arr in $servers_data_arr) {
             $arr_out += $serv_name+$elem_arr
         }
     }
     else {
-        # РџР»СЋСЃСѓРµРј РІ РјР°СЃСЃРёРІ РёРјСЏ СЃРµСЂРІРµСЂР° Р±РµР· СЃРєРѕР±РѕРє
+        # Џ«обгҐ¬ ў ¬ ббЁў Ё¬п бҐаўҐа  ЎҐ§ бЄ®Ў®Є
         $arr_out += $el_servers_data_arr
     }
 }
