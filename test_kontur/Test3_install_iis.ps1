@@ -38,7 +38,7 @@ if (Get-ChildItem -Path IIS:\Sites | findstr 'Default Web Site') {
 if (!(Get-ChildItem -Path IIS:\Sites | findstr ${site_name})) {
     Write-Host "Устанавливаю сайт $site_name на порту $site_port." -ForegroundColor Yellow
     mkdir $site_path -Force
-    Copy-Item ".\html_data\*" -Destination "$site_path" -Recurse
+    Copy-Item ".\test3_html_data\*" -Destination "$site_path" -Recurse
     New-Item iis:\Sites\$site_name -bindings @{protocol="http";bindingInformation=":${site_port}:"} -physicalPath $site_path
     if (Get-ChildItem -Path IIS:\Sites | findstr ${site_name}) {
         Write-Host "Сайт $site_name установлен." -ForegroundColor Green 
