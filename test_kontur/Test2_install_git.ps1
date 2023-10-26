@@ -2,7 +2,7 @@
 $GLPath = "$env:SystemDrive\gitlab-runner"
 $GLBin  = "$GLPath\gitlab-runner.exe"
 
-# Для любого скрипта или команды, выполняющегося вне сеанса, требуется using модификатор область для внедрения значений переменных из вызывающего сеанса область, чтобы получить к ним доступ из кода сеанса. Фоновые задания, запущенные с Start-Job (сеанс вне процесса).
+# Р”Р»СЏ Р»СЋР±РѕРіРѕ СЃРєСЂРёРїС‚Р° РёР»Рё РєРѕРјР°РЅРґС‹, РІС‹РїРѕР»РЅСЏСЋС‰РµРіРѕСЃСЏ РІРЅРµ СЃРµР°РЅСЃР°, С‚СЂРµР±СѓРµС‚СЃСЏ using РјРѕРґРёС„РёРєР°С‚РѕСЂ РѕР±Р»Р°СЃС‚СЊ РґР»СЏ РІРЅРµРґСЂРµРЅРёСЏ Р·РЅР°С‡РµРЅРёР№ РїРµСЂРµРјРµРЅРЅС‹С… РёР· РІС‹Р·С‹РІР°СЋС‰РµРіРѕ СЃРµР°РЅСЃР° РѕР±Р»Р°СЃС‚СЊ, С‡С‚РѕР±С‹ РїРѕР»СѓС‡РёС‚СЊ Рє РЅРёРј РґРѕСЃС‚СѓРї РёР· РєРѕРґР° СЃРµР°РЅСЃР°. Р¤РѕРЅРѕРІС‹Рµ Р·Р°РґР°РЅРёСЏ, Р·Р°РїСѓС‰РµРЅРЅС‹Рµ СЃ Start-Job (СЃРµР°РЅСЃ РІРЅРµ РїСЂРѕС†РµСЃСЃР°).
 $Token  = $using:Token
 $User   = $using:User
 $Pass   = $using:Pass
@@ -11,88 +11,88 @@ $Pass   = $using:Pass
 $GitUri = 'https://github.com/git-for-windows/git/releases/download/v2.25.0.windows.1/Git-2.25.0-64-bit.exe'
 $Uri    = 'https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-windows-amd64.exe'
 
-# При возникновении ошибок - молча продолжать
+# РџСЂРё РІРѕР·РЅРёРєРЅРѕРІРµРЅРёРё РѕС€РёР±РѕРє - РјРѕР»С‡Р° РїСЂРѕРґРѕР»Р¶Р°С‚СЊ
 $progressPreference = 'silentlyContinue'
 
-# Указываем типы протоколов безопасности
+# РЈРєР°Р·С‹РІР°РµРј С‚РёРїС‹ РїСЂРѕС‚РѕРєРѕР»РѕРІ Р±РµР·РѕРїР°СЃРЅРѕСЃС‚Рё
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Ssl3,Tls,Tls11,Tls12'
 
 
-# Устновка GIT
+# РЈСЃС‚РЅРѕРІРєР° GIT
 & git --version | Out-Null
 if ($LASTEXITCODE -ne 0) {
     Set-Location "$env:windir\temp"
     Invoke-WebRequest -UseBasicParsing -Uri $GitUri -OutFile ".\git-installer.exe"
     Start-Process '.\git-installer.exe' -ArgumentList '/SILENT' -NoNewWindow -Wait
     Remove-Item '.\git-installer.exe' -Force
-    # Обновление переменных
+    # РћР±РЅРѕРІР»РµРЅРёРµ РїРµСЂРµРјРµРЅРЅС‹С…
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 }
 
-# Настройка GIT
-# -ea 0 (error action) - ошибка не выведется на экран - работа продолжится
-# Тут используется обновление gitlab-runner
+# РќР°СЃС‚СЂРѕР№РєР° GIT
+# -ea 0 (error action) - РѕС€РёР±РєР° РЅРµ РІС‹РІРµРґРµС‚СЃСЏ РЅР° СЌРєСЂР°РЅ - СЂР°Р±РѕС‚Р° РїСЂРѕРґРѕР»Р¶РёС‚СЃСЏ
+# РўСѓС‚ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РѕР±РЅРѕРІР»РµРЅРёРµ gitlab-runner
 if(Get-Service "gitlab-runner" -ea 0){
-    # получим полный путь до исполняемого файла, split - разбить по строка, Select-Object -First 1 - взять первый элемент из всех строк
+    # РїРѕР»СѓС‡РёРј РїРѕР»РЅС‹Р№ РїСѓС‚СЊ РґРѕ РёСЃРїРѕР»РЅСЏРµРјРѕРіРѕ С„Р°Р№Р»Р°, split - СЂР°Р·Р±РёС‚СЊ РїРѕ СЃС‚СЂРѕРєР°, Select-Object -First 1 - РІР·СЏС‚СЊ РїРµСЂРІС‹Р№ СЌР»РµРјРµРЅС‚ РёР· РІСЃРµС… СЃС‚СЂРѕРє
     $bin = (Get-WmiObject win32_service | Where-Object{$_.Name -like 'gitlab-runner'} | Select-Object PathName).PathName -split ' ' | Select-Object -First 1
-    # получаем папку где лежит исполняемый файл
+    # РїРѕР»СѓС‡Р°РµРј РїР°РїРєСѓ РіРґРµ Р»РµР¶РёС‚ РёСЃРїРѕР»РЅСЏРµРјС‹Р№ С„Р°Р№Р»
     $GLPath = Split-Path $bin -Parent
     Set-Location $GLPath
-    # Узнаем версию исполняемого файла, c помомщью рег выр -match ищем номер версии, Out-Null скроет значение
+    # РЈР·РЅР°РµРј РІРµСЂСЃРёСЋ РёСЃРїРѕР»РЅСЏРµРјРѕРіРѕ С„Р°Р№Р»Р°, c РїРѕРјРѕРјС‰СЊСЋ СЂРµРі РІС‹СЂ -match РёС‰РµРј РЅРѕРјРµСЂ РІРµСЂСЃРёРё, Out-Null СЃРєСЂРѕРµС‚ Р·РЅР°С‡РµРЅРёРµ
     & $bin --version | Where-Object {$_ -match '^Version:\s*(\d+\.\d+\.\d+)'} | Out-Null
-    # Получем результат в виде - Major, minor, build
+    # РџРѕР»СѓС‡РµРј СЂРµР·СѓР»СЊС‚Р°С‚ РІ РІРёРґРµ - Major, minor, build
     $VersionOld = [version]$Matches[1]
-    # если значение отстутсвует, выдать ошибку и завершить работу скрипта с кодом 1
+    # РµСЃР»Рё Р·РЅР°С‡РµРЅРёРµ РѕС‚СЃС‚СѓС‚СЃРІСѓРµС‚, РІС‹РґР°С‚СЊ РѕС€РёР±РєСѓ Рё Р·Р°РІРµСЂС€РёС‚СЊ СЂР°Р±РѕС‚Сѓ СЃРєСЂРёРїС‚Р° СЃ РєРѕРґРѕРј 1
     if(!$VersionOld) {
         throw "Error"
         exit 1
     }
 
     $GLBinNew = "$GLPath\gitlab-runner_new.exe"
-    # качаем новый файл
+    # РєР°С‡Р°РµРј РЅРѕРІС‹Р№ С„Р°Р№Р»
     Invoke-WebRequest -UseBasicParsing -Uri $Uri -OutFile $GLBinNew
 
-    # проверяем версию
+    # РїСЂРѕРІРµСЂСЏРµРј РІРµСЂСЃРёСЋ
     & $GLBinNew --version | Where-Object {$_ -match '^Version:\s*(\d+\.\d+\.\d+)'} | Out-Null
     $VersionNew = [version]$Matches[1]
 
-    # сравнение, если больше или равно
+    # СЃСЂР°РІРЅРµРЅРёРµ, РµСЃР»Рё Р±РѕР»СЊС€Рµ РёР»Рё СЂР°РІРЅРѕ
     if($VersionOld -ge $VersionNew){
-        # удаляем и завершаем работу скрипта
+        # СѓРґР°Р»СЏРµРј Рё Р·Р°РІРµСЂС€Р°РµРј СЂР°Р±РѕС‚Сѓ СЃРєСЂРёРїС‚Р°
         Remove-Item $GLBinNew
         exit 0
     }
 
-    # если версия новая, тогда стопаем, удаляем, и удаляем исполняемый файл
-    Write-Host "`nУстановка версии $VersionNew"
+    # РµСЃР»Рё РІРµСЂСЃРёСЏ РЅРѕРІР°СЏ, С‚РѕРіРґР° СЃС‚РѕРїР°РµРј, СѓРґР°Р»СЏРµРј, Рё СѓРґР°Р»СЏРµРј РёСЃРїРѕР»РЅСЏРµРјС‹Р№ С„Р°Р№Р»
+    Write-Host "`nРЈСЃС‚Р°РЅРѕРІРєР° РІРµСЂСЃРёРё $VersionNew"
     & $bin stop      2>&1 | Write-Host
     & $bin uninstall 2>&1 | Write-Host
     Remove-Item $bin -Force
 
-    # переименовываем gitlab-runner_new.exe в gitlab-runner.exe
+    # РїРµСЂРµРёРјРµРЅРѕРІС‹РІР°РµРј gitlab-runner_new.exe РІ gitlab-runner.exe
     Rename-Item $GLBinNew -NewName $GLBin
-    # Проводим установук с параметрами
+    # РџСЂРѕРІРѕРґРёРј СѓСЃС‚Р°РЅРѕРІСѓРє СЃ РїР°СЂР°РјРµС‚СЂР°РјРё
     & $GLBin install --user "$User" --password "$Pass" 2>&1 | Write-Host
     & $GLBin start 2>&1 | Write-Host
 
     Write-Host "`nDone."
 }
-# Первоначальная установка
+# РџРµСЂРІРѕРЅР°С‡Р°Р»СЊРЅР°СЏ СѓСЃС‚Р°РЅРѕРІРєР°
 else{
-    # Создаем директорию
+    # РЎРѕР·РґР°РµРј РґРёСЂРµРєС‚РѕСЂРёСЋ
     New-Item -ItemType Directory -Path $GLPath -ea 0
     Set-Location $GLPath
 
-    # получаем имя своего компа, если оно не равно dev.kontur, тогда отдаем $false='Evrika-prod'
+    # РїРѕР»СѓС‡Р°РµРј РёРјСЏ СЃРІРѕРµРіРѕ РєРѕРјРїР°, РµСЃР»Рё РѕРЅРѕ РЅРµ СЂР°РІРЅРѕ dev.kontur, С‚РѕРіРґР° РѕС‚РґР°РµРј $false='Evrika-prod'
     $Tags = @{$true='Evrika-dev';$false='Evrika-prod'}[([System.Net.Dns]::GetHostByName("localhost").HostName) -match 'dev.kontur']
 
-    # качаем исполняемый файл
+    # РєР°С‡Р°РµРј РёСЃРїРѕР»РЅСЏРµРјС‹Р№ С„Р°Р№Р»
     Invoke-WebRequest -UseBasicParsing -Uri $Uri -OutFile $GLBin
 
-    # устанавливаем
+    # СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј
     & $GLBin install --user "$User" --password "$Pass" 2>&1 | Write-Host
 
-    # меняем политики безопасности, а именно пользователя, gc=getcontent,sc=select content
+    # РјРµРЅСЏРµРј РїРѕР»РёС‚РёРєРё Р±РµР·РѕРїР°СЃРЅРѕСЃС‚Рё, Р° РёРјРµРЅРЅРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ, gc=getcontent,sc=select content
     $tmp = New-TemporaryFile
     secedit /export /cfg "$tmp.inf" | Out-Null
     (gc -Encoding ascii "$tmp.inf") -replace '^SeServiceLogonRight .+', "`$0,$User" | sc -Encoding ascii "$tmp.inf"
@@ -100,7 +100,7 @@ else{
     secedit /configure /db "$tmp.sdb" /cfg "$tmp.inf" | Out-Null
     rm $tmp* -ea 0
 
-    # регистрируемся на git
+    # СЂРµРіРёСЃС‚СЂРёСЂСѓРµРјСЃСЏ РЅР° git
     & $GLBin register                     `
         --non-interactive                 `
         --url 'https://git.skbkontur.ru/' `
@@ -109,7 +109,7 @@ else{
         --description "Evrika"            `
         --tag-list $Tags 2>&1 | Write-Host
 
-    # Запуск
+    # Р—Р°РїСѓСЃРє
     Write-Host "`nStart gitlab-runner"
     & $GLBin start 2>&1 | Write-Host
 }
